@@ -17,6 +17,76 @@ const inputHousingRoomsElement = mapFilterFormElement.querySelector('#housing-ro
 const inputHousingGuestsElement = mapFilterFormElement.querySelector('#housing-guests');
 const inputHousingFeaturesElement = mapFilterFormElement.querySelector('#housing-features');
 
+const submitAdFormElement = adFormElement.querySelector('.ad-form__submit');
+
+const pristine = new Pristine (adFormElement, {
+  classTo: 'ad-form__element',
+  errorTextParent: 'ad-form__element'
+});
+
+const validateTitle = function (title) {
+  return (title.length >= 30 && title.length <= 100);
+};
+
+pristine.addValidator(inputTitleElement, validateTitle, 'Длина заголовка должна быть не менее 30 символов и не более 100 символов');
+
+const validatePrice = function (price) {
+  if (price.match(/^[0-9]+$/) && (price <= 100000) && (price >= 0)) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+pristine.addValidator(inputPriceElement, validatePrice, 'Введите числовое значение в пределах от 0 до 100000');
+
+const settleOption = {
+  '1': ['1'],
+  '2': ['2', '1'],
+  '3': ['3', '2', '1'],
+  '100': ['0']
+};
+
+const validateCapacity = function () {
+  return settleOption[inputRoomsElement.value].includes(inputCapacityElement.value);
+};
+
+const getCapacityMessage = function () {
+  let rooms = 'комнаты';
+  let guests = `${inputCapacityElement.value} гостей`;
+
+  if (inputRoomsElement.value === '1') {
+    rooms = 'комната';
+  } else if (inputRoomsElement.value === '100') {
+    rooms = 'комнат';
+  }
+
+  if (inputCapacityElement.value === '0' && inputRoomsElement.value !== '100') {
+    return `${inputRoomsElement.value} ${rooms} для гостей`;
+  }
+
+  if (inputCapacityElement.value === '1') {
+    guests = `${inputCapacityElement.value} гостя`;
+  } else if (inputCapacityElement.value === '100') {
+    guests = 'гостей';
+  }
+
+  return `${inputRoomsElement.value} ${rooms} не для ${guests}`;
+};
+
+pristine.addValidator(inputRoomsElement, validateCapacity, getCapacityMessage);
+pristine.addValidator(inputCapacityElement, validateCapacity, getCapacityMessage);
+
+inputRoomsElement.addEventListener('change', (evt) => {
+  evt.preventDefault();
+  pristine.validate(inputCapacityElement);
+  console.log(inputRoomsElement.value);
+});
+
+inputCapacityElement.addEventListener('change', (evt) => {
+  evt.preventDefault();
+  pristine.validate(inputRoomsElement);
+});
 
 const inActivePage = function () {
   adFormElement.classList.add('ad-form--disabled');
@@ -61,5 +131,14 @@ const activePage = function () {
   inputHousingGuestsElement.disabled = false;
   inputHousingFeaturesElement.disabled = false;
 };
+
+adFormElement.addEventListener('submit', (evt) => {
+  evt.preventDefault();
+  if (pristine.validate()) {
+    console.log('Form is ready');
+  } else {
+    console.log('Form is not ready');
+  }
+});
 
 export {inActivePage, activePage};
