@@ -6,6 +6,8 @@ const inputTypeElement = adFormElement.querySelector('#type');
 const inputPriceElement = adFormElement.querySelector('#price');
 const inputAddressElement = adFormElement.querySelector('#address');
 const inputTimeElement = adFormElement.querySelector('.ad-form__element--time');
+const inTimeElement = adFormElement.querySelector('#timein');
+const outTimeElement = adFormElement.querySelector('#timeout');
 const inputRoomsElement = adFormElement.querySelector('#room_number');
 const inputCapacityElement = adFormElement.querySelector('#capacity');
 const inputFeaturesElement = adFormElement.querySelector('.features');
@@ -29,16 +31,6 @@ const validateTitle = function (title) {
 };
 
 pristine.addValidator(inputTitleElement, validateTitle, 'Длина заголовка должна быть не менее 30 символов и не более 100 символов');
-
-const validatePrice = function (price) {
-  if (price.match(/^[0-9]+$/) && (price <= 100000) && (price >= 0)) {
-    return true;
-  } else {
-    return false;
-  }
-};
-
-pristine.addValidator(inputPriceElement, validatePrice, 'Введите числовое значение в пределах от 0 до 100000');
 
 const settleOption = {
   '1': ['1'],
@@ -80,12 +72,102 @@ pristine.addValidator(inputCapacityElement, validateCapacity, getCapacityMessage
 inputRoomsElement.addEventListener('change', (evt) => {
   evt.preventDefault();
   pristine.validate(inputCapacityElement);
-  console.log(inputRoomsElement.value);
 });
 
 inputCapacityElement.addEventListener('change', (evt) => {
   evt.preventDefault();
   pristine.validate(inputRoomsElement);
+});
+
+const validatePrice = function (value) {
+  let min;
+  switch (inputTypeElement.value) {
+    case 'bungalow':
+      min = 0;
+      break;
+    case 'flat':
+      min = 1000;
+      break;
+    case 'hotel':
+      min = 3000;
+      break;
+    case 'house':
+      min = 5000;
+      break;
+    case 'palace':
+      min = 10000;
+      break;
+  }
+
+  if (value.match(/^[0-9]+$/) && (value <= 100000) && (value >= min)) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+const getPriceMessage = function () {
+  return `Стоимость должна быть в пределах от ${inputPriceElement.placeholder} до 100000`;
+};
+
+pristine.addValidator(inputPriceElement, validatePrice, getPriceMessage);
+
+const changeType = function () {
+  switch (inputTypeElement.value) {
+    case 'bungalow':
+      inputPriceElement.placeholder = '0';
+      break;
+    case 'flat':
+      inputPriceElement.placeholder = '1000';
+      break;
+    case 'hotel':
+      inputPriceElement.placeholder = '3000';
+      break;
+    case 'house':
+      inputPriceElement.placeholder = '5000';
+      break;
+    case 'palace':
+      inputPriceElement.placeholder = '10000';
+      break;
+  }
+  pristine.validate(getPriceMessage);
+};
+
+changeType();
+
+inputTypeElement.addEventListener('change', (evt) => {
+  evt.preventDefault();
+  changeType();
+});
+
+inTimeElement.addEventListener('change', (evt) => {
+  evt.preventDefault();
+  switch (inTimeElement.value) {
+    case '12:00':
+      outTimeElement.value = '12:00';
+      break;
+    case '13:00':
+      outTimeElement.value = '13:00';
+      break;
+    case '14:00':
+      outTimeElement.value = '14:00';
+      break;
+  }
+});
+
+outTimeElement.addEventListener('change', (evt) => {
+  evt.preventDefault();
+  switch (outTimeElement.value) {
+    case '12:00':
+      inTimeElement.value = '12:00';
+      break;
+    case '13:00':
+      inTimeElement.value = '13:00';
+      break;
+    case '14:00':
+      inTimeElement.value = '14:00';
+      break;
+  }
 });
 
 const inActivePage = function () {
