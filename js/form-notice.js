@@ -1,3 +1,7 @@
+import './price-slider.js';
+import {watchChangePriceSlider} from './price-slider.js';
+import {changeMinPriceSlider} from './price-slider.js';
+
 const adFormElement = document.querySelector('.ad-form');
 const mapFilterFormElement = document.querySelector('.map__filters');
 const formHeaderElement = adFormElement.querySelector('.ad-form-header');
@@ -19,7 +23,7 @@ const inputHousingRoomsElement = mapFilterFormElement.querySelector('#housing-ro
 const inputHousingGuestsElement = mapFilterFormElement.querySelector('#housing-guests');
 const inputHousingFeaturesElement = mapFilterFormElement.querySelector('#housing-features');
 
-const submitAdFormElement = adFormElement.querySelector('.ad-form__submit');
+watchChangePriceSlider(inputPriceElement);
 
 const pristine = new Pristine (adFormElement, {
   classTo: 'ad-form__element',
@@ -116,18 +120,23 @@ const changeType = function () {
   switch (inputTypeElement.value) {
     case 'bungalow':
       inputPriceElement.placeholder = '0';
+      changeMinPriceSlider(0);
       break;
     case 'flat':
       inputPriceElement.placeholder = '1000';
+      changeMinPriceSlider(1000);
       break;
     case 'hotel':
       inputPriceElement.placeholder = '3000';
+      changeMinPriceSlider(3000);
       break;
     case 'house':
       inputPriceElement.placeholder = '5000';
+      changeMinPriceSlider(5000);
       break;
     case 'palace':
       inputPriceElement.placeholder = '10000';
+      changeMinPriceSlider(10000);
       break;
   }
   pristine.validate(getPriceMessage);
