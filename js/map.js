@@ -15,6 +15,8 @@ const makeMainPin = function (coordinates) {
   });
 };
 
+const mainPin = makeMainPin({lat: 35.6895, lng: 139.692});
+
 const getAddress = function (pin) {
   inputAddressElement.value = `${(pin.getLatLng().lat).toFixed(5)}, ${(pin.getLatLng().lng).toFixed(5)}`;
   pin.on('moveend', (evt) => {
@@ -31,7 +33,6 @@ const initMap = function (coordinates) {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     },
   ).addTo(map);
-  const mainPin = makeMainPin(coordinates);
   mainPin.addTo(map);
   getAddress(mainPin);
 };
@@ -39,6 +40,13 @@ const initMap = function (coordinates) {
 const loadMap = function (cb) {
   map.on('load', () => {
     cb();
+  });
+};
+
+const setDefaultMainPin = function() {
+  mainPin.setLatLng({
+    lat: 35.6895,
+    lng: 139.692
   });
 };
 
@@ -61,4 +69,8 @@ const makeMarker = function ({lat, lng}, notice) {
     .bindPopup(createNoticeElement(notice));
 };
 
-export {initMap, loadMap, makeMarker};
+const closeMapPopup = function () {
+  map.closePopup();
+};
+
+export {initMap, loadMap, makeMarker, setDefaultMainPin, closeMapPopup};
