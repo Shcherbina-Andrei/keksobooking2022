@@ -4,9 +4,7 @@ const getData = function (onSuccess) {
   fetch('https://26.javascript.pages.academy/keksobooking/data')
     .then((response) => response.json())
     .then((marks) => {
-      marks.forEach((mark) => {
-        onSuccess(mark.location, mark);
-      });
+      onSuccess(marks);
     })
     .catch(() => {
       getDataErrorMessage('Ошибка загрузки данных');

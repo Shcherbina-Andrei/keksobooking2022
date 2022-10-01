@@ -2,6 +2,7 @@ import {createNoticeElement} from './similiar-notices.js';
 
 const map = L.map('map-canvas');
 const inputAddressElement = document.querySelector('#address');
+const markerGroup = L.layerGroup().addTo(map);
 
 const makeMainPin = function (coordinates) {
   const mainPinIcon = L.icon ({
@@ -50,7 +51,7 @@ const setDefaultMainPin = function() {
   });
 };
 
-const makeMarker = function ({lat, lng}, notice) {
+const makeMarker = function ({lat, lng}) {
   const icon = L.icon ({
     iconUrl: 'img/pin.svg',
     iconSize: [40, 40],
@@ -64,13 +65,21 @@ const makeMarker = function ({lat, lng}, notice) {
   {
     icon,
   });
-  marker
-    .addTo(map)
-    .bindPopup(createNoticeElement(notice));
+  return marker;
+};
+
+const makeMarkerGroup = function (array) {
+  array.forEach((element) => {
+    makeMarker(element.location).addTo(markerGroup).bindPopup(createNoticeElement(element));
+  });
+};
+
+const deleteMarkerGroups = function () {
+  markerGroup.clearLayers();
 };
 
 const closeMapPopup = function () {
   map.closePopup();
 };
 
-export {initMap, loadMap, makeMarker, setDefaultMainPin, closeMapPopup};
+export {initMap, loadMap, makeMarker, setDefaultMainPin, closeMapPopup, makeMarkerGroup, deleteMarkerGroups};
