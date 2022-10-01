@@ -30,21 +30,30 @@ const createNoticeElement = function (notice) {
   noticeElement.querySelector('.popup__text--capacity').textContent = `${notice.offer.rooms} комнаты для ${notice.offer.guests} гостей`;
   noticeElement.querySelector('.popup__text--time').textContent = `Заезд после ${notice.offer.checkin}, выезд до ${notice.offer.checkout}`;
   const featuresList = noticeElement.querySelectorAll('.popup__feature');
-  featuresList.forEach((element) => {
-    const isNecessary = notice.offer.features.some((feature) => element.classList.contains(`popup__feature--${feature}`));
-    if (!isNecessary) {
-      element.remove();
-    }
-  });
+  const featuresListContainer = noticeElement.querySelector('.popup__features');
+  if (!('features' in notice.offer)) {
+    featuresListContainer.remove();
+  } else {
+    featuresList.forEach((element) => {
+      const isNecessary = notice.offer.features.some((feature) => element.classList.contains(`popup__feature--${feature}`));
+      if (!isNecessary) {
+        element.remove();
+      }
+    });
+  }
   noticeElement.querySelector('.popup__description').textContent = notice.offer.description;
   const photoContainer = noticeElement.querySelector('.popup__photos');
   noticeElement.querySelector('.popup__photo').remove();
-  notice.offer.photos.forEach((photo) => {
-    const photoCard = noticeTemplateElement.querySelector('.popup__photo').cloneNode(true);
 
-    photoCard.src = photo;
-    photoContainer.appendChild(photoCard);
-  });
+  if (!('photos' in notice.offer)) {
+    photoContainer.remove();
+  } else {
+    notice.offer.photos.forEach((photo) => {
+      const photoCard = noticeTemplateElement.querySelector('.popup__photo').cloneNode(true);
+      photoCard.src = photo;
+      photoContainer.appendChild(photoCard);
+    });
+  }
   noticeElement.querySelector('.popup__avatar').src = notice.author.avatar;
   return noticeElement;
 };
