@@ -2,6 +2,7 @@ import './price-slider.js';
 import {watchChangePriceSlider} from './price-slider.js';
 import {changeMinPriceSlider} from './price-slider.js';
 import {sendData} from './data-exchange.js';
+import {resetFilter} from './filter-form.js';
 import {getSuccessMessage, getErrorMessage} from './util.js';
 import {validateTitle, validateCapacity, getCapacityMessage, validatePrice, getPriceMessage} from './util-validation.js';
 import {setDefaultMainPin, closeMapPopup} from './map.js';
@@ -111,10 +112,13 @@ const unblockSubmitButton = function () {
   buttonSubmitElement.disabled = false;
 };
 
-buttonResetElement.addEventListener('click', () => {
-  setDefaultMainPin();
-  closeMapPopup();
-});
+const setUserFormReset = function (array) {
+  buttonResetElement.addEventListener('click', () => {
+    setDefaultMainPin();
+    resetFilter(array);
+    closeMapPopup();
+  });
+};
 
 const setUserFormSubmit = function () {
   adFormElement.addEventListener('submit', (evt) => {
@@ -139,4 +143,5 @@ const setUserFormSubmit = function () {
   });
 };
 
-export {setUserFormSubmit};
+export {setUserFormSubmit, setUserFormReset};
+
