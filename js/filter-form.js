@@ -9,115 +9,89 @@ const inputHousingGuestsElement = mapFilterFormElement.querySelector('#housing-g
 const inputHousingFeaturesElement = mapFilterFormElement.querySelector('#housing-features');
 const inputFeaturesElements = inputHousingFeaturesElement.querySelectorAll('input');
 
-const displayMarkers = function (notices, number = 10) {
-  makeMarkerGroup(notices.slice(0, number));
-};
+const NOTICES_COUNT = 10;
 
-const sortHousingType = function (notices) {
-  let array = notices;
-  switch (inputHousingTypeElement.value) {
-    case 'any' :
-      break;
-    case 'bungalow' :
-      array = notices.filter((notice) => notice.offer.type === 'bungalow');
-      break;
-    case 'flat' :
-      array = notices.filter((notice) => notice.offer.type === 'flat');
-      break;
-    case 'hotel' :
-      array = notices.filter((notice) => notice.offer.type === 'hotel');
-      break;
-    case 'house' :
-      array = notices.filter((notice) => notice.offer.type === 'house');
-      break;
-    case 'palace' :
-      array = notices.filter((notice) => notice.offer.type === 'palace');
-      break;
+const checkHouseType = function (notice) {
+  if (inputHousingTypeElement.value === 'any') {
+    return true;
   }
-
-  return array;
+  return notice.offer.type === inputHousingTypeElement.value;
 };
 
-const sortPriceNumber = function (notices) {
-  let array = notices;
+const checkPrice = function (notice) {
   switch (inputHousingPriceElement.value) {
     case 'any':
-      break;
+      return true;
     case 'low':
-      array = notices.filter((notice) => notice.offer.price < 10000);
-      break;
+      return notice.offer.price < 10000;
     case 'middle':
-      array = notices.filter((notice) => notice.offer.price >= 10000 && notice.offer.price < 50000);
-      break;
+      return notice.offer.price < 50000;
     case 'high':
-      array = notices.filter((notice) => notice.offer.price >= 50000);
-      break;
+      return notice.offer.price >= 50000;
   }
-  return array;
 };
 
-const sortHousingRooms = function (notices) {
-  let array = notices;
+const checkHousingRooms = function (notice) {
   switch (inputHousingRoomsElement.value) {
     case 'any':
-      break;
+      return true;
     case '1':
-      array = notices.filter((notice) => notice.offer.rooms === 1);
-      break;
+      return notice.offer.rooms === 1;
     case '2':
-      array = notices.filter((notice) => notice.offer.rooms === 2);
-      break;
+      return notice.offer.rooms === 2;
     case '3':
-      array = notices.filter((notice) => notice.offer.rooms === 3);
-      break;
+      return notice.offer.rooms === 3;
   }
-
-  return array;
 };
 
-const sortHousingGuestsNumbers = function (notices) {
-  let array = notices;
+const checkHousingGuestsNumbers = function (notice) {
   switch (inputHousingGuestsElement.value) {
     case 'any':
-      break;
+      return true;
     case '1':
-      array = notices.filter((notice) => notice.offer.guests === 1);
-      break;
+      return notice.offer.guests === 1;
     case '2':
-      array = notices.filter((notice) => notice.offer.guests === 2);
-      break;
+      return notice.offer.guests === 2;
+    case '3':
+      return notice.offer.guests === 3;
     case '0':
-      array = notices.filter((notice) => notice.offer.guests === 0);
-      break;
+      return notice.offer.guests === 0;
   }
-
-  return array;
 };
 
-const sortFeatures = function (notices) {
-  let array = notices;
-  const checkedFeatures = [];
-  inputFeaturesElements.forEach((element) => {
-    if (element.checked) {
-      checkedFeatures.push(element.value);
-    }
-  });
+const checkFeatures = function (notice) {
+  const checkedFeatures = inputHousingFeaturesElement.querySelectorAll('input:checked');
+
   if (checkedFeatures.length === 0) {
-    return array;
+    return true;
   }
-  array = notices.filter((notice) => {
-    if (!('features' in notice.offer)) {
+  if (!notice.offer.features) {
+    return false;
+  }
+  for (const element of checkedFeatures) {
+    if (!(notice.offer.features.includes(element.value))) {
       return false;
     }
-    for (let i = 0; i < checkedFeatures.length; i++) {
-      if (!(notice.offer.features.includes(checkedFeatures[i]))) {
-        return false;
-      }
-    }
-    return true;
-  });
+  }
+  return true;
+};
 
-  return array;
+const filterNotices = function (notices) {
+  const filteredNotices = [];
+  for (const notice of notices) {
+    if (filteredNotices.length >= NOTICES_COUNT) {
+      break;
+    }
+
+    if (checkHouseType(notice) && checkPrice(notice) && checkHousingRooms(notice) && checkHousingGuestsNumbers(notice) && checkFeatures(notice)) {
+      filteredNotices.push(notice);
+    }
+  }
+  return filteredNotices;
+};
+
+const displayMarkers = function (notices) {
+  makeMarkerGroup(filterNotices(notices));
 };
 
 const resetFilter = function (array) {
@@ -132,18 +106,13 @@ const resetFilter = function (array) {
   displayMarkers(array);
 };
 
-const setFilterListener = function (notices, cb) {
+
+const setFilterListener = function (notices) {
   mapFilterFormElement.addEventListener('change', (evt) => {
     evt.preventDefault();
-    let array = notices;
-    array = sortHousingType(array);
-    array = sortPriceNumber(array);
-    array = sortHousingRooms(array);
-    array = sortHousingGuestsNumbers(array);
-    array = sortFeatures(array);
     deleteMarkerGroups();
-    cb(array);
+    displayMarkers(notices);
   });
 };
 
-export {displayMarkers, setFilterListener, resetFilter};
+export {setFilterListener, resetFilter, displayMarkers};
