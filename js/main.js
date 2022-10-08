@@ -16,8 +16,7 @@ initMap({lat: 35.6895, lng: 139.692});
 setUserFormSubmit();
 
 getData((marks) => {
-  const array = marks;
-  displayMarkers(array);
-  setFilterListener(array, displayMarkers);
-  setUserFormReset(array);
+  displayMarkers(marks);
+  setFilterListener(marks);
+  setUserFormReset(marks);
 });

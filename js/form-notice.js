@@ -6,6 +6,8 @@ import {resetFilter} from './filter-form.js';
 import {getSuccessMessage, getErrorMessage} from './util.js';
 import {validateTitle, validateCapacity, getCapacityMessage, validatePrice, getPriceMessage} from './util-validation.js';
 import {setDefaultMainPin, closeMapPopup} from './map.js';
+import './avatar-uploader.js';
+import {resetAvatar} from './avatar-uploader.js';
 
 const adFormElement = document.querySelector('.ad-form');
 const inputTitleElement = adFormElement.querySelector('#title');
@@ -116,6 +118,7 @@ const setUserFormReset = function (array) {
   buttonResetElement.addEventListener('click', () => {
     setDefaultMainPin();
     resetFilter(array);
+    resetAvatar();
     closeMapPopup();
   });
 };
